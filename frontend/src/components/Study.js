@@ -295,7 +295,7 @@ function Study() {
 
       <main className="flex-grow max-w-6xl mx-auto p-4 sm:p-6 w-full relative">
 
-        <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+        <div className="sm:absolute sm:top-6 sm:right-6 flex justify-center mb-6 sm:mb-0">
           <a href="/history" className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/10 px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-lg hover:shadow-white/5">
             🕒 View Past History
           </a>
@@ -348,11 +348,11 @@ function Study() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0 justify-center">
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-sm rounded-xl px-4 py-2.5 outline-none hover:border-slate-600 focus:border-blue-500 transition-colors cursor-pointer"
+                  className="bg-slate-800 border border-slate-700 text-sm rounded-xl px-4 py-2.5 outline-none hover:border-slate-600 focus:border-blue-500 transition-colors cursor-pointer w-full sm:w-auto"
                 >
                   <option value="English">English (Indian)</option>
                   <option value="Hindi">Hindi (Indian)</option>

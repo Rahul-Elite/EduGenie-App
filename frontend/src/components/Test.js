@@ -169,11 +169,11 @@ function Test() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0 justify-center">
                     <select
                       value={language}
                       onChange={(e) => setLanguage(e.target.value)}
-                      className="bg-slate-800 border border-slate-700 text-sm rounded-xl px-4 py-2.5 outline-none hover:border-slate-600 focus:border-blue-500 transition-colors cursor-pointer"
+                      className="bg-slate-800 border border-slate-700 text-sm rounded-xl px-4 py-2.5 outline-none hover:border-slate-600 focus:border-blue-500 transition-colors cursor-pointer w-full sm:w-auto"
                     >
                       <option value="English">English</option>
                       <option value="Hindi">Hindi</option>
@@ -213,11 +213,11 @@ function Test() {
                   className="w-full h-48 bg-slate-900/50 border border-slate-700 rounded-xl p-4 text-gray-200 outline-none focus:border-blue-500 transition-colors resize-none leading-relaxed"
                   placeholder="Paste your study material text or related topics name here to generate a smart quiz..."
                 />
-                <div className="flex justify-end gap-3 items-center mt-2">
+                <div className="flex flex-wrap sm:flex-nowrap justify-end gap-3 items-center mt-2 w-full">
                   <select
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-sm rounded-xl px-4 py-2.5 outline-none hover:border-slate-600 focus:border-blue-500 transition-colors cursor-pointer"
+                    className="bg-slate-800 border border-slate-700 text-sm rounded-xl px-4 py-2.5 outline-none hover:border-slate-600 focus:border-blue-500 transition-colors cursor-pointer w-full sm:w-auto"
                   >
                     <option value="English">English</option>
                     <option value="Hindi">Hindi</option>

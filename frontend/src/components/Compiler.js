@@ -140,15 +140,15 @@ function Compiler() {
         <div className="flex-grow flex flex-col lg:flex-row gap-6 mb-8 min-h-[600px]">
           
           
-          <div className="flex-1 flex flex-col bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+          <div className="flex-1 flex flex-col bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl min-h-[400px]">
             
            
-            <div className="flex items-center justify-between p-4 bg-slate-900/80 border-b border-white/10">
-              <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-900/80 border-b border-white/10 gap-3">
+              <div className="flex items-center gap-4 w-full sm:w-auto">
                 <select
                   value={language}
                   onChange={handleLanguageChange}
-                  className="bg-slate-800 border border-slate-700 text-sm rounded-xl px-4 py-2 outline-none hover:border-slate-500 focus:border-blue-500 transition-colors cursor-pointer capitalize font-medium"
+                  className="bg-slate-800 border border-slate-700 text-sm rounded-xl px-4 py-2 outline-none hover:border-slate-500 focus:border-blue-500 transition-colors cursor-pointer capitalize font-medium w-full sm:w-auto"
                 >
                   {runtimes.length === 0 && <option value="">Loading...</option>}
                   {runtimes.map(r => (
@@ -159,10 +159,10 @@ function Compiler() {
                 </select>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-3 w-full sm:w-auto justify-end">
                 <button
                   onClick={() => setShowCustomInput(!showCustomInput)}
-                  className={`px-4 py-2 text-sm font-medium rounded-xl transition-colors border ${showCustomInput ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-slate-800 text-gray-300 border-slate-700 hover:bg-slate-700'}`}
+                  className={`px-4 py-2 text-sm font-medium rounded-xl transition-colors border flex-grow sm:flex-grow-0 text-center ${showCustomInput ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-slate-800 text-gray-300 border-slate-700 hover:bg-slate-700'}`}
                 >
                   {showCustomInput ? 'Hide Custom Input' : 'Add Custom Input'}
                 </button>
@@ -170,7 +170,7 @@ function Compiler() {
                 <button
                   onClick={handleRun}
                   disabled={isLoading || runtimes.length === 0}
-                  className="px-6 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-sm font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-sm font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed flex-grow sm:flex-grow-0"
                 >
                   {isLoading ? (
                     <>
@@ -228,7 +228,7 @@ function Compiler() {
           </div>
 
          
-          <div className="w-full lg:w-1/3 flex flex-col bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+          <div className="w-full lg:w-1/3 flex flex-col bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl min-h-[250px] lg:min-h-0">
             <div className="px-4 py-3 bg-slate-800/80 border-b border-white/10 flex items-center gap-2 text-sm font-bold text-gray-300 uppercase tracking-wider">
               <span>🖥️</span> Output Terminal
             </div>
