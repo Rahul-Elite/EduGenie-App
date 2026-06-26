@@ -12,7 +12,22 @@ let transporter;
 
 async function setupTransporter() {
   try {
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    if (process.env.RESEND_API_KEY) {
+      transporter = nodemailer.createTransport({
+        host: 'smtp.resend.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: 'resend',
+          pass: process.env.RESEND_API_KEY
+        },
+        connectionTimeout: 5000,
+        greetingTimeout: 5000,
+        socketTimeout: 5000
+      });
+      console.log("✅ Resend SMTP transporter ready (smtp.resend.com:465)");
+    }
+    else if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       const host = process.env.EMAIL_HOST || 'smtp.gmail.com';
       const port = parseInt(process.env.EMAIL_PORT) || 465;
       const secure = process.env.EMAIL_SECURE !== 'false'; // default to true for SSL (port 465)
@@ -105,8 +120,12 @@ router.post('/signup', async (req, res) => {
 
     await newUser.save();
 
+    const fromEmail = process.env.RESEND_API_KEY 
+      ? (process.env.EMAIL_USER || 'onboarding@resend.dev')
+      : (process.env.EMAIL_USER || 'test@ethereal.email');
+
     const mailOptions = {
-      from: `"Study App" <${process.env.EMAIL_USER || 'test@ethereal.email'}>`,
+      from: `"EduGenie" <${fromEmail}>`,
       to: email,
       subject: 'Your OTP for Signup',
       text: `Your OTP is ${otp}. It expires in 2 minutes.`,
