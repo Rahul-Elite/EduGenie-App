@@ -118,7 +118,7 @@ function Header() {
 
       {/* Mobile Navigation Dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-[#0b0a1f]/98 border-b border-white/10 backdrop-blur-md px-6 py-6 flex flex-col gap-3 z-40 animate-in slide-in-from-top-5 duration-200 shadow-2xl shadow-black/60">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-[#0b0a1f] border-b border-white/10 backdrop-blur-md px-6 py-6 flex flex-col gap-3 z-40 animate-in slide-in-from-top-5 duration-200 shadow-2xl shadow-black/60">
           <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavClass('/')}>
             🏠 Home
           </Link>
