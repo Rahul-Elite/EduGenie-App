@@ -37,7 +37,7 @@ function Header() {
   };
 
   return (
-    <header className="flex justify-between items-center px-6 md:px-16 h-18 bg-[#0b0a1f]/95 border-b border-white/10 backdrop-blur-md sticky top-0 z-50 w-full">
+    <header className="relative flex justify-between items-center px-6 md:px-16 h-20 bg-[#0b0a1f]/95 border-b border-white/10 backdrop-blur-md sticky top-0 z-50 w-full">
      
       <Link to="/" className="flex items-center gap-2 group">
         <img
@@ -118,21 +118,21 @@ function Header() {
 
       {/* Mobile Navigation Dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-18 left-0 right-0 bg-[#0b0a1f] border-b border-white/10 backdrop-blur-md px-6 py-6 flex flex-col gap-3 z-40 animate-in slide-in-from-top-5 duration-200">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-[#0b0a1f]/98 border-b border-white/10 backdrop-blur-md px-6 py-6 flex flex-col gap-3 z-40 animate-in slide-in-from-top-5 duration-200 shadow-2xl shadow-black/60">
           <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavClass('/')}>
-            Home
+            🏠 Home
           </Link>
           <Link to="/study" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavClass('/study')}>
-            Study
+            📚 Study
           </Link>
           <Link to="/test" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavClass('/test')}>
-            Test
+            ✏️ Test
           </Link>
           <Link to="/compiler" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavClass('/compiler')}>
-            Compiler
+            💻 Compiler
           </Link>
           <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavClass('/about')}>
-            About Us
+            ℹ️ About Us
           </Link>
           
           <div className="border-t border-white/10 pt-4 mt-2 flex flex-col gap-3">
