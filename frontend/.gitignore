@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+
+# Production build
+build/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Package lock files (optional - keep if working in a team)
+# package-lock.json
+# yarn.lock
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Coverage reports
+coverage/
+
+# Cache
+.cache/
+.eslintcache
+
+# Temporary files
+*.tmp
+*.temp
+
+# React build artifacts
+dist/
+
+# Misc
+*.swp
+*.swo
