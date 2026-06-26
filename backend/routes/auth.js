@@ -1,99 +1,25 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/User');
 
 const router = express.Router();
 
-let transporter;
-
-
-async function setupTransporter() {
-  try {
-    if (process.env.RESEND_API_KEY) {
-      transporter = nodemailer.createTransport({
-        host: 'smtp.resend.com',
-        port: 465,
-        secure: true,
-        auth: {
-          user: 'resend',
-          pass: process.env.RESEND_API_KEY
-        },
-        connectionTimeout: 5000,
-        greetingTimeout: 5000,
-        socketTimeout: 5000
-      });
-      console.log("✅ Resend SMTP transporter ready (smtp.resend.com:465)");
-    }
-    else if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      const host = process.env.EMAIL_HOST || 'smtp.gmail.com';
-      const port = parseInt(process.env.EMAIL_PORT) || 465;
-      const secure = process.env.EMAIL_SECURE !== 'false'; // default to true for SSL (port 465)
-
-      transporter = nodemailer.createTransport({
-        host,
-        port,
-        secure,
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
-        },
-        connectionTimeout: 5000,
-        greetingTimeout: 5000,
-        socketTimeout: 5000
-      });
-      console.log(`✅ SMTP transporter ready (${host}:${port})`);
-    } 
-    else {
-      console.log("Attempting to initialize Ethereal email transporter...");
-      // Wrap ethereal account creation with a 4-second timeout to prevent connection hang
-      const createTestAccountPromise = nodemailer.createTestAccount();
-      const testAccount = await Promise.race([
-        createTestAccountPromise,
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Ethereal setup timeout')), 4000))
-      ]);
-
-      transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
-        port: 587,
-        secure: false,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass
-        }
-      });
-
-      console.log("Ethereal transporter ready");
-    }
-  } catch (err) {
-    console.error("Error setting transporter, falling back to console-only mock:", err.message);
-    transporter = {
-      sendMail: async (options) => {
-        console.log("📨 [MOCK EMAIL] To:", options.to, "Subject:", options.subject);
-        return { messageId: 'mock-id' };
-      }
-    };
-  }
+// Initialize Resend
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+if (resend) {
+  console.log("✅ Resend client initialized successfully");
+} else {
+  console.log("⚠️ RESEND_API_KEY is not defined in environment variables. Emails will run in mock/console mode.");
 }
-
-(async () => {
-  await setupTransporter();
-})();
 
 
 
 router.post('/signup', async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    if (!transporter) {
-      await setupTransporter();
-    }
-    if (!transporter) {
-      return res.status(500).json({ message: "Email service not ready. Please try again." });
-    }
 
     const existingUser = await User.findOne({ email });
 
@@ -120,12 +46,10 @@ router.post('/signup', async (req, res) => {
 
     await newUser.save();
 
-    const fromEmail = process.env.RESEND_API_KEY 
-      ? (process.env.EMAIL_USER || 'onboarding@resend.dev')
-      : (process.env.EMAIL_USER || 'test@ethereal.email');
+    const fromEmail = process.env.EMAIL_USER || 'onboarding@resend.dev';
 
     const mailOptions = {
-      from: `"EduGenie" <${fromEmail}>`,
+      from: `EduGenie <${fromEmail}>`,
       to: email,
       subject: 'Your OTP for Signup',
       text: `Your OTP is ${otp}. It expires in 2 minutes.`,
@@ -137,22 +61,19 @@ router.post('/signup', async (req, res) => {
       `
     };
 
-    let emailSent = false;
-    let previewUrl = '';
     try {
-      // Set a 6-second timeout for SMTP send to prevent API requests from hanging indefinitely
-      const info = await Promise.race([
-        transporter.sendMail(mailOptions),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP send timeout')), 6000))
-      ]);
-      emailSent = true;
-      console.log(` Email sent to: ${email}`);
-      if (!process.env.EMAIL_USER && info && typeof nodemailer.getTestMessageUrl === 'function') {
-        previewUrl = nodemailer.getTestMessageUrl(info);
-        if (previewUrl) console.log(` Preview URL: ${previewUrl}`);
+      if (resend) {
+        // Set a 6-second timeout for Resend API send to prevent API requests from hanging indefinitely
+        await Promise.race([
+          resend.emails.send(mailOptions),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Resend API send timeout')), 6000))
+        ]);
+        console.log(` Email sent via Resend to: ${email}`);
+      } else {
+        console.log(`📨 [MOCK EMAIL - NO RESEND API KEY] To: ${email} | OTP: ${otp}`);
       }
     } catch (mailErr) {
-      console.error("❌ Email sending failed or timed out:", mailErr.message);
+      console.error("❌ Resend email sending failed or timed out:", mailErr.message);
     }
 
     console.log(` OTP Generated: ${otp} for ${email}`);
