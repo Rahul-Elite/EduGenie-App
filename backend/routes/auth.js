@@ -62,7 +62,44 @@ router.post('/signup', async (req, res) => {
     };
 
     try {
-      if (resend) {
+      if (process.env.BREVO_API_KEY) {
+        // Send email via Brevo API
+        const fromEmail = process.env.EMAIL_USER || 'onboarding@yourdomain.com';
+        const brevoPayload = {
+          sender: { name: "EduGenie", email: fromEmail },
+          to: [{ email }],
+          subject: 'Your OTP for Signup',
+          htmlContent: `
+            <h2>OTP Verification</h2>
+            <p>Your OTP is:</p>
+            <h1 style="font-size: 32px; font-weight: bold; color: #4f46e5; letter-spacing: 2px;">${otp}</h1>
+            <p>This OTP will expire in 2 minutes.</p>
+          `,
+          textContent: `Your OTP is ${otp}. It expires in 2 minutes.`
+        };
+
+        const brevoCall = fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'api-key': process.env.BREVO_API_KEY,
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify(brevoPayload)
+        });
+
+        const sendRes = await Promise.race([
+          brevoCall,
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Brevo API timeout')), 6000))
+        ]);
+
+        if (sendRes.ok) {
+          console.log(` Email sent via Brevo to: ${email}`);
+        } else {
+          const errData = await sendRes.json();
+          console.error("❌ Brevo SMTP failed:", errData);
+        }
+      } else if (resend) {
         // Set a 6-second timeout for Resend API send to prevent API requests from hanging indefinitely
         await Promise.race([
           resend.emails.send(mailOptions),
@@ -70,10 +107,10 @@ router.post('/signup', async (req, res) => {
         ]);
         console.log(` Email sent via Resend to: ${email}`);
       } else {
-        console.log(`📨 [MOCK EMAIL - NO RESEND API KEY] To: ${email} | OTP: ${otp}`);
+        console.log(`📨 [MOCK EMAIL - NO SENDER KEY] To: ${email} | OTP: ${otp}`);
       }
     } catch (mailErr) {
-      console.error("❌ Resend email sending failed or timed out:", mailErr.message);
+      console.error("❌ Email sending failed or timed out:", mailErr.message);
     }
 
     console.log(` OTP Generated: ${otp} for ${email}`);
