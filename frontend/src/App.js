@@ -12,6 +12,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import History from './components/History';
 import Test from './components/Test';
 import Compiler from './components/Compiler';
+import { API_BASE_URL } from './config';
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -19,7 +20,7 @@ function AppContent() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/auth/verify', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/verify`, {
           credentials: 'include'
         });
         const data = await response.json();

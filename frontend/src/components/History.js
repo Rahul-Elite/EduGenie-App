@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { logout } from '../redux/authSlice';
 import Header from './Header';
 import Footer from './Footer';
+import { API_BASE_URL } from '../config';
 
 function History() {
   const dispatch = useDispatch();
@@ -19,7 +20,7 @@ function History() {
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/history', {
+      const res = await fetch(`${API_BASE_URL}/api/history`, {
         credentials: 'include'
       });
       const data = await res.json();

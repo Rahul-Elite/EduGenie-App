@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { logout } from '../redux/authSlice';
 import Header from './Header';
 import Footer from './Footer';
+import { API_BASE_URL } from '../config';
 
 function Study() {
   const dispatch = useDispatch();
@@ -163,7 +164,7 @@ function Study() {
       formData.append('file', file);
       formData.append('language', language);
 
-      const res = await fetch('http://localhost:5000/api/upload', {
+      const res = await fetch(`${API_BASE_URL}/api/upload`, {
         method: 'POST',
         body: formData
       });
@@ -196,7 +197,7 @@ function Study() {
       formData.append('file', file);
       formData.append('language', language);
 
-      const res = await fetch('http://localhost:5000/api/quiz', {
+      const res = await fetch(`${API_BASE_URL}/api/quiz`, {
         method: 'POST',
         body: formData
       });
@@ -228,7 +229,7 @@ function Study() {
       formData.append('file', file);
       formData.append('language', language);
 
-      const res = await fetch('http://localhost:5000/api/flashcards', {
+      const res = await fetch(`${API_BASE_URL}/api/flashcards`, {
         method: 'POST',
         body: formData
       });
@@ -262,7 +263,7 @@ function Study() {
       if (newData.quiz) formData.append('quiz', JSON.stringify(newData.quiz));
       if (newData.flashcards) formData.append('flashcards', JSON.stringify(newData.flashcards));
 
-      const res = await fetch('http://localhost:5000/api/save-history', {
+      const res = await fetch(`${API_BASE_URL}/api/save-history`, {
         method: 'POST',
         credentials: 'include',
         body: formData

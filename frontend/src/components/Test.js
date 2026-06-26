@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import { API_BASE_URL } from '../config';
 
 function Test() {
   const [file, setFile] = useState(null);
@@ -57,7 +58,7 @@ function Test() {
       }
       formData.append('language', language);
 
-      const res = await fetch('http://localhost:5000/api/quiz', {
+      const res = await fetch(`${API_BASE_URL}/api/quiz`, {
         method: 'POST',
         body: formData
       });

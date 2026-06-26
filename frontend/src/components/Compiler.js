@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import { API_BASE_URL } from '../config';
 
 function Compiler() {
   const [runtimes, setRuntimes] = useState([]);
@@ -29,7 +30,7 @@ function Compiler() {
   useEffect(() => {
     const fetchRuntimes = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/compiler/runtimes');
+        const res = await fetch(`${API_BASE_URL}/api/compiler/runtimes`);
         const data = await res.json();
         
         
@@ -95,7 +96,7 @@ function Compiler() {
         customInput: showCustomInput ? customInput : ""
       };
 
-      const res = await fetch('http://localhost:5000/api/compiler/execute', {
+      const res = await fetch(`${API_BASE_URL}/api/compiler/execute`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

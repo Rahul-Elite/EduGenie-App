@@ -124,7 +124,7 @@ router.post("/flashcards", upload.single("file"), async (req, res) => {
         const fileExt = path.extname(req.file.originalname).toLowerCase();
 
         const model = genAI.getGenerativeModel({
-            model: "gemini-3-flash-preview",
+            model: "gemini-2.5-flash",
             systemInstruction: `Return ONLY JSON. No extra text.`
         });
 
