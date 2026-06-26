@@ -13,14 +13,23 @@ let transporter;
 async function setupTransporter() {
   try {
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      const host = process.env.EMAIL_HOST || 'smtp.gmail.com';
+      const port = parseInt(process.env.EMAIL_PORT) || 465;
+      const secure = process.env.EMAIL_SECURE !== 'false'; // default to true for SSL (port 465)
+
       transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host,
+        port,
+        secure,
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS
-        }
+        },
+        connectionTimeout: 5000,
+        greetingTimeout: 5000,
+        socketTimeout: 5000
       });
-      console.log("✅ Gmail transporter ready");
+      console.log(`✅ SMTP transporter ready (${host}:${port})`);
     } 
     else {
       console.log("Attempting to initialize Ethereal email transporter...");
