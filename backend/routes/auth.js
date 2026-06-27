@@ -64,41 +64,43 @@ router.post('/signup', async (req, res) => {
     try {
       if (process.env.BREVO_API_KEY) {
         // Send email via Brevo API
-        const fromEmail = process.env.EMAIL_USER || 'onboarding@yourdomain.com';
-        const brevoPayload = {
-          sender: { name: "EduGenie", email: fromEmail },
-          to: [{ email }],
-          subject: 'Your OTP for Signup',
-          htmlContent: `
-            <h2>OTP Verification</h2>
-            <p>Your OTP is:</p>
-            <h1 style="font-size: 32px; font-weight: bold; color: #4f46e5; letter-spacing: 2px;">${otp}</h1>
-            <p>This OTP will expire in 2 minutes.</p>
-          `,
-          textContent: `Your OTP is ${otp}. It expires in 2 minutes.`
-        };
-
-        const brevoCall = fetch('https://api.brevo.com/v3/smtp/email', {
-          method: 'POST',
+        const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+          method: "POST",
           headers: {
-            'accept': 'application/json',
-            'api-key': process.env.BREVO_API_KEY,
-            'content-type': 'application/json'
+            "accept": "application/json",
+            "content-type": "application/json",
+            "api-key": process.env.BREVO_API_KEY
           },
-          body: JSON.stringify(brevoPayload)
+          body: JSON.stringify({
+            sender: {
+              name: "EduGenie",
+              email: process.env.EMAIL_USER // Must be verified in Brevo
+            },
+            to: [
+              {
+                email: email
+              }
+            ],
+            subject: "Your OTP for Signup",
+            htmlContent: `
+              <h2>OTP Verification</h2>
+              <p>Your OTP is:</p>
+              <h1 style="font-size:32px;color:#4f46e5;">${otp}</h1>
+              <p>This OTP will expire in 2 minutes.</p>
+            `,
+            textContent: `Your OTP is ${otp}. It expires in 2 minutes.`
+          })
         });
 
-        const sendRes = await Promise.race([
-          brevoCall,
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Brevo API timeout')), 6000))
-        ]);
+        const data = await response.json();
 
-        if (sendRes.ok) {
-          console.log(` Email sent via Brevo to: ${email}`);
-        } else {
-          const errData = await sendRes.json();
-          console.error("❌ Brevo SMTP failed:", errData);
+        if (!response.ok) {
+          console.error("❌ Brevo Error:", data);
+          throw new Error(data.message || "Failed to send email");
         }
+
+        console.log("✅ Email sent successfully!");
+        console.log(data);
       } else if (resend) {
         // Set a 6-second timeout for Resend API send to prevent API requests from hanging indefinitely
         await Promise.race([
