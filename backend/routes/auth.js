@@ -54,7 +54,7 @@ router.post('/signup', async (req, res) => {
         body: JSON.stringify({
           sender: {
             name: "EduGenie",
-            email: process.env.EMAIL_USER // Must be verified in Brevo
+            email: process.env.EMAIL_USER 
           },
           to: [
             {
