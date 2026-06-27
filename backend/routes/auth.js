@@ -1,29 +1,10 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/User');
 
 const router = express.Router();
-
-// Initialize Nodemailer transporter
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
-
-// Verify transporter connection
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("❌ Nodemailer initialization failed:", error.message);
-  } else {
-    console.log("✅ Nodemailer transporter is ready to send emails");
-  }
-});
 
 
 
@@ -56,26 +37,51 @@ router.post('/signup', async (req, res) => {
 
     await newUser.save();
 
-    const mailOptions = {
-      from: `"EduGenie" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'Your OTP for Signup',
-      text: `Your OTP is ${otp}. It expires in 2 minutes.`,
-      html: `
-        <h2>OTP Verification</h2>
-        <p>Your OTP is:</p>
-        <h1 style="font-size:32px;color:#4f46e5;">${otp}</h1>
-        <p>This OTP will expire in 2 minutes.</p>
-      `
-    };
-
     try {
-      if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-        await transporter.sendMail(mailOptions);
-        console.log(`✅ Email sent via Nodemailer to: ${email}`);
-      } else {
-        console.log(`📨 [MOCK EMAIL - NO CREDENTIALS] To: ${email} | OTP: ${otp}`);
+      if (!process.env.BREVO_API_KEY) {
+        throw new Error("BREVO_API_KEY is missing in environment variables");
       }
+
+      console.log("Using Brevo API Key:", process.env.BREVO_API_KEY);
+
+      const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+          "accept": "application/json",
+          "content-type": "application/json",
+          "api-key": process.env.BREVO_API_KEY
+        },
+        body: JSON.stringify({
+          sender: {
+            name: "EduGenie",
+            email: process.env.EMAIL_USER // Must be verified in Brevo
+          },
+          to: [
+            {
+              email: email
+            }
+          ],
+          subject: "Your OTP for Signup",
+          htmlContent: `
+            <h2>OTP Verification</h2>
+            <p>Your OTP is:</p>
+            <h1 style="font-size:32px;color:#4f46e5;">${otp}</h1>
+            <p>This OTP will expire in 2 minutes.</p>
+          `,
+          textContent: `Your OTP is ${otp}. It expires in 2 minutes.`
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("❌ Brevo Error:", data);
+        throw new Error(data.message || "Failed to send email via Brevo");
+      }
+
+      console.log("✅ Email sent successfully via Brevo!");
+      console.log(data);
+
     } catch (mailErr) {
       console.error("❌ Email sending failed:", mailErr.message);
     }
